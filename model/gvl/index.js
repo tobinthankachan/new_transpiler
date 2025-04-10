@@ -8,3 +8,5 @@ export * from './Purpose.js';
 export * from './Stack.js';
 export * from './Vendor.js';
 export * from './VendorList.js';
+export * from './DataCategory.js';
+export * from './GvlCreationOptions.js';

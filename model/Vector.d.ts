@@ -1,7 +1,7 @@
 import { Cloneable } from '../Cloneable.js';
 import { IntMap } from './IntMap.js';
-declare type SingleIDOrCollection = number | number[] | IntMap<unknown> | Set<number | string>;
-export declare type IdBoolTuple = [number, boolean];
+type SingleIDOrCollection = number | number[] | IntMap<unknown> | Set<number | string>;
+export type IdBoolTuple = [number, boolean];
 /**
  * Vector class is like a Set except it keeps track of a max id
  */

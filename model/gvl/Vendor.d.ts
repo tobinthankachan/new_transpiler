@@ -1,4 +1,6 @@
 import { GVLMapItem } from './GVLMapItem.js';
+import { DataRetention } from './DataRetention.js';
+import { VendorUrl } from './VendorUrl.js';
 export interface Vendor extends GVLMapItem {
     purposes: number[];
     legIntPurposes: number[];
@@ -6,7 +8,7 @@ export interface Vendor extends GVLMapItem {
     specialPurposes: number[];
     features: number[];
     specialFeatures: number[];
-    policyUrl: string;
+    policyUrl?: string;
     usesCookies: boolean;
     cookieMaxAgeSeconds: number | null;
     cookieRefresh: boolean;
@@ -16,4 +18,7 @@ export interface Vendor extends GVLMapItem {
     overflow?: {
         httpGetLimit: 32 | 128;
     };
+    dataRetention?: DataRetention;
+    urls?: VendorUrl[];
+    dataDeclaration?: number[];
 }

@@ -1,5 +1,4 @@
 import { PurposeRestriction } from './PurposeRestriction.js';
-import { BinarySearchTree } from './BinarySearchTree.js';
 import { RestrictionType } from './RestrictionType.js';
 import { Cloneable } from '../Cloneable.js';
 export class PurposeRestrictionVector extends Cloneable {
@@ -11,8 +10,6 @@ export class PurposeRestrictionVector extends Cloneable {
     /**
      * a map indexed by a string which will be a 'hash' of the purpose and
      * restriction type.
-     *
-     * Using a BST to keep vendors in a sorted order for encoding later
      */
     map = new Map();
     gvl_;
@@ -41,10 +38,10 @@ export class PurposeRestrictionVector extends Cloneable {
                 else if (vendor.flexiblePurposes.length) {
                     switch (restrictionType) {
                         /**
-                         * If the vendor has the purposeId in flexiblePurposes and it is
-                         * listed as a legitimate interest purpose we can set the
-                         * override to require consent.
-                         */
+                           * If the vendor has the purposeId in flexiblePurposes and it is
+                           * listed as a legitimate interest purpose we can set the
+                           * override to require consent.
+                           */
                         case RestrictionType.REQUIRE_CONSENT:
                             result = (vendor.flexiblePurposes.includes(purposeId) && vendor.legIntPurposes.includes(purposeId));
                             break;
@@ -81,7 +78,7 @@ export class PurposeRestrictionVector extends Cloneable {
         if (this.isOkToHave(purposeRestriction.restrictionType, purposeRestriction.purposeId, vendorId)) {
             const hash = purposeRestriction.hash;
             if (!this.has(hash)) {
-                this.map.set(hash, new BinarySearchTree());
+                this.map.set(hash, new Set());
                 this.bitLength = 0;
             }
             /**
@@ -99,29 +96,26 @@ export class PurposeRestrictionVector extends Cloneable {
      * @return {void}
      */
     restrictPurposeToLegalBasis(purposeRestriction) {
-        const vendors = this.gvl.vendorIds;
+        const vendors = Array.from(this.gvl.vendorIds);
         const hash = purposeRestriction.hash;
-        const lastEntry = (function () {
-            let value;
-            for (value of vendors)
-                ;
-            return value;
-        })();
+        const lastEntry = vendors[vendors.length - 1];
         /**
          * Create an ordered array of vendor IDs from `1` (the minimum value for Vendor ID) to `lastEntry`
          */
         const values = [...Array(lastEntry).keys()].map((i) => i + 1);
-        for (let i = 1; i <= lastEntry; i++) {
-            if (!this.has(hash)) {
-                this.map.set(hash, BinarySearchTree.build(values)); // use static method `build` to create a `BST` from the ordered array of IDs
-                this.bitLength = 0;
+        if (!this.has(hash)) {
+            this.map.set(hash, new Set(values)); // use static method `build` to create a `BST` from the ordered array of IDs
+            this.bitLength = 0;
+        }
+        else {
+            for (let i = 1; i <= lastEntry; i++) {
+                /**
+                 * Previously I had a check here to remove a duplicate value, but because
+                 * we're using a tree the value is guaranteed to be unique so there is no
+                 * need to add an additional de-duplication here.
+                 */
+                this.map.get(hash).add(i);
             }
-            /**
-             * Previously I had a check here to remove a duplicate value, but because
-             * we're using a tree the value is guaranteed to be unique so there is no
-             * need to add an additional de-duplication here.
-             */
-            this.map.get(hash).add(i);
         }
     }
     /**
@@ -139,19 +133,19 @@ export class PurposeRestrictionVector extends Cloneable {
         if (purposeRestriction) {
             const hash = purposeRestriction.hash;
             if (this.has(hash)) {
-                vendorIds = this.map.get(hash).get();
+                vendorIds = Array.from(this.map.get(hash));
             }
         }
         else {
             const vendorSet = new Set();
-            this.map.forEach((bst) => {
-                bst.get().forEach((vendorId) => {
+            this.map.forEach((set) => {
+                set.forEach((vendorId) => {
                     vendorSet.add(vendorId);
                 });
             });
             vendorIds = Array.from(vendorSet);
         }
-        return vendorIds;
+        return vendorIds.sort((a, b) => a - b);
     }
     getRestrictionType(vendorId, purposeId) {
         let rType;
@@ -189,16 +183,16 @@ export class PurposeRestrictionVector extends Cloneable {
      */
     getMaxVendorId() {
         let retr = 0;
-        this.map.forEach((bst) => {
-            retr = Math.max(bst.max(), retr);
+        this.map.forEach((set) => {
+            retr = Math.max(Array.from(set)[set.size - 1], retr);
         });
         return retr;
     }
     getRestrictions(vendorId) {
         const retr = [];
-        this.map.forEach((bst, hash) => {
+        this.map.forEach((set, hash) => {
             if (vendorId) {
-                if (bst.contains(vendorId)) {
+                if (set.has(vendorId)) {
                     retr.push(PurposeRestriction.unHash(hash));
                 }
             }
@@ -210,7 +204,7 @@ export class PurposeRestrictionVector extends Cloneable {
     }
     getPurposes() {
         const purposeIds = new Set();
-        this.map.forEach((bst, hash) => {
+        this.map.forEach((set, hash) => {
             purposeIds.add(PurposeRestriction.unHash(hash).purposeId);
         });
         return Array.from(purposeIds);
@@ -224,11 +218,11 @@ export class PurposeRestrictionVector extends Cloneable {
      */
     remove(vendorId, purposeRestriction) {
         const hash = purposeRestriction.hash;
-        const bst = this.map.get(hash);
-        if (bst) {
-            bst.remove(vendorId);
+        const set = this.map.get(hash);
+        if (set) {
+            set.delete(vendorId);
             // if it's empty let's delete the key so it doesn't show up empty
-            if (bst.isEmpty()) {
+            if (set.size == 0) {
                 this.map.delete(hash);
                 this.bitLength = 0;
             }
@@ -247,12 +241,12 @@ export class PurposeRestrictionVector extends Cloneable {
              * if we have restrictions set before the gvl is set then we'll have to
              * go through and remove some if they're not valid
              */
-            this.map.forEach((bst, hash) => {
+            this.map.forEach((set, hash) => {
                 const purposeRestriction = PurposeRestriction.unHash(hash);
-                const vendors = bst.get();
+                const vendors = Array.from(set);
                 vendors.forEach((vendorId) => {
                     if (!this.isOkToHave(purposeRestriction.restrictionType, purposeRestriction.purposeId, vendorId)) {
-                        bst.remove(vendorId);
+                        set.delete(vendorId);
                     }
                 });
             });

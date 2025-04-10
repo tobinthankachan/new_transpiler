@@ -15,7 +15,7 @@ export declare class BitLength {
     static readonly [Fields.purposeLegitimateInterests]: number;
     static readonly [Fields.purposeOneTreatment]: number;
     static readonly [Fields.specialFeatureOptins]: number;
-    static readonly [Fields.useNonStandardStacks]: number;
+    static readonly [Fields.useNonStandardTexts]: number;
     static readonly [Fields.vendorListVersion]: number;
     static readonly [Fields.version]: number;
     static readonly anyBoolean: number;

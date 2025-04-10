@@ -19,7 +19,7 @@ export declare class Fields {
     static readonly purposeLegitimateInterests: 'purposeLegitimateInterests';
     static readonly purposeOneTreatment: 'purposeOneTreatment';
     static readonly specialFeatureOptins: 'specialFeatureOptins';
-    static readonly useNonStandardStacks: 'useNonStandardStacks';
+    static readonly useNonStandardTexts: 'useNonStandardTexts';
     static readonly vendorConsents: 'vendorConsents';
     static readonly vendorLegitimateInterests: 'vendorLegitimateInterests';
     static readonly vendorListVersion: 'vendorListVersion';

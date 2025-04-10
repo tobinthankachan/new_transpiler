@@ -1,9 +1,9 @@
 import { Cloneable } from './Cloneable.js';
 import { GVLError } from './errors/index.js';
 import { ConsentLanguages, IntMap } from './model/index.js';
-import { Feature, Purpose, Stack, Vendor, VendorList } from './model/gvl/index.js';
-import { DataCategory, GoogleVendor } from './model/gvl/DataCategory.js';
-export declare type VersionOrVendorList = string | number | VendorList;
+import { Feature, Purpose, Stack, Vendor, VendorList, DataCategory, GvlCreationOptions } from './model/gvl/index.js';
+import { GoogleVendor } from './model/gvl/DataCategory.js';
+export type VersionOrVendorList = string | number | VendorList;
 /**
  * class with utilities for managing the global vendor list.  Will use JSON to
  * fetch the vendor list from specified url and will serialize it into this
@@ -122,10 +122,6 @@ export declare class GVL extends Cloneable<GVL> implements VendorList {
      */
     purposes: IntMap<Purpose>;
     /**
-     * @param {IntMap<DataCategory>} a collection of [[DataCategory]]s
-     */
-    dataCategories: IntMap<DataCategory>;
-    /**
      * @param {IntMap<Purpose>} a collection of [[Purpose]]s
      */
     specialPurposes: IntMap<Purpose>;
@@ -150,15 +146,15 @@ export declare class GVL extends Cloneable<GVL> implements VendorList {
      * @param {IntMap<Vendor>} a collection of [[Vendor]]. Used as a backup if a whitelist is sets
      */
     private fullVendorList;
-    /**
+     /**
      * @param {IntMap<GoogleVendor>} a collection of [[GoogleVendor]]s
      */
-    private googleVendors_: IntMap<GoogleVendor>;
-    googleVendorIds: Set<number>;
-    /**
-     * @param {IntMap<GoogleVendor>} a collection of [[GoogleVendor]]. Used as a backup if a whitelist is sets
-     */
-    private fullGoogleVendorList;
+     private googleVendors_: IntMap<GoogleVendor>;
+     googleVendorIds: Set<number>;
+     /**
+      * @param {IntMap<GoogleVendor>} a collection of [[GoogleVendor]]. Used as a backup if a whitelist is sets
+      */
+     private fullGoogleVendorList;
     /**
      * @param {ByPurposeVendorMap} vendors by purpose
      */
@@ -179,19 +175,25 @@ export declare class GVL extends Cloneable<GVL> implements VendorList {
      * @param {IntMap<Stack>} a collection of [[Stack]]s
      */
     stacks: IntMap<Stack>;
+    /**
+     * @param {IntMap<DataCategory>} a collection of [[DataCategory]]s
+     */
+    dataCategories?: IntMap<DataCategory>;
     private lang_;
+    private cacheLang_;
     private isLatest;
     /**
      * @param {VersionOrVendorList} [versionOrVendorList] - can be either a
      * [[VendorList]] object or a version number represented as a string or
      * number to download.  If nothing is passed the latest version of the GVL
      * will be loaded
+     * @param {GvlCreationOptions} [options] - it is an optional object where the default language can be set
      */
-    constructor(versionOrVendorList?: VersionOrVendorList);
+    constructor(versionOrVendorList?: VersionOrVendorList, options?: GvlCreationOptions);
     /**
      * emptyLanguageCache
      *
-     * @param {string} [lang] - Optional ISO 639-1 langauge code to remove from
+     * @param {string} [lang] - Optional language code to remove from
      * the cache.  Should be one of the languages in GVL.consentLanguages set.
      * If not then the whole cache will be deleted.
      * @return {boolean} - true if anything was deleted from the cache
@@ -215,11 +217,25 @@ export declare class GVL extends Cloneable<GVL> implements VendorList {
      * functionality and methods of this class.
      */
     getJson(): VendorList;
+    private cloneSpecialFeatures;
+    private cloneFeatures;
+    private cloneStacks;
+    private cloneDataCategories;
+    private cloneSpecialPurposes;
+    private clonePurposes;
+    private static clonePurpose;
+    private static cloneFeature;
+    private static cloneDataCategory;
+    private static cloneStack;
+    private static cloneDataRetention;
+    private static cloneVendorUrls;
+    private static cloneVendor;
+    private cloneVendors;
     /**
      * changeLanguage - retrieves the purpose language translation and sets the
      * internal language variable
      *
-     * @param {string} lang - ISO 639-1 langauge code to change language to
+     * @param {string} lang - language code to change language to
      * @return {Promise<void | GVLError>} - returns the `readyPromise` and
      * resolves when this GVL is populated with the data from the language file.
      */

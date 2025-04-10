@@ -9,4 +9,4 @@
  * ```
  */
 import { IntMap } from './IntMap.js';
-export declare type KeyMap<T> = IntMap<T>;
+export type KeyMap<T> = IntMap<T>;

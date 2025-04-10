@@ -19,7 +19,7 @@ export class Fields {
     static purposeLegitimateInterests = 'purposeLegitimateInterests';
     static purposeOneTreatment = 'purposeOneTreatment';
     static specialFeatureOptins = 'specialFeatureOptins';
-    static useNonStandardStacks = 'useNonStandardStacks';
+    static useNonStandardTexts = 'useNonStandardTexts';
     static vendorConsents = 'vendorConsents';
     static vendorLegitimateInterests = 'vendorLegitimateInterests';
     static vendorListVersion = 'vendorListVersion';

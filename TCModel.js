@@ -9,12 +9,12 @@ export class TCModel extends Cloneable {
     static consentLanguages = GVL.consentLanguages;
     isServiceSpecific_ = false;
     supportOOB_ = true;
-    useNonStandardStacks_ = false;
+    useNonStandardTexts_ = false;
     purposeOneTreatment_ = false;
     publisherCountryCode_ = 'AA';
     version_ = 2;
     consentScreen_ = 0;
-    policyVersion_ = 2;
+    policyVersion_ = 4;
     consentLanguage_ = 'EN';
     cmpId_ = 0;
     cmpVersion_ = 0;
@@ -314,11 +314,11 @@ export class TCModel extends Cloneable {
      *
      * @param {boolean} bool - value to set
      */
-    set useNonStandardStacks(bool) {
-        this.useNonStandardStacks_ = bool;
+    set useNonStandardTexts(bool) {
+        this.useNonStandardTexts_ = bool;
     }
-    get useNonStandardStacks() {
-        return this.useNonStandardStacks_;
+    get useNonStandardTexts() {
+        return this.useNonStandardTexts_;
     }
     /**
      * Whether or not this publisher supports OOB signaling.  On Global TC String

@@ -2,8 +2,8 @@ import { Cloneable } from './Cloneable.js';
 import { GVL } from './GVL.js';
 import { ConsentLanguages, IntMap, PurposeRestrictionVector, Vector } from './model/index.js';
 import { Purpose } from './model/gvl/index.js';
-declare type StringOrNumber = number | string;
-export declare type TCModelPropType = number | Date | string | boolean | Vector | PurposeRestrictionVector;
+type StringOrNumber = number | string;
+export type TCModelPropType = number | Date | string | boolean | Vector | PurposeRestrictionVector;
 export declare class TCModel extends Cloneable<TCModel> {
     /**
      * Set of available consent languages published by the IAB
@@ -11,7 +11,7 @@ export declare class TCModel extends Cloneable<TCModel> {
     static readonly consentLanguages: ConsentLanguages;
     private isServiceSpecific_;
     private supportOOB_;
-    private useNonStandardStacks_;
+    private useNonStandardTexts_;
     private purposeOneTreatment_;
     private publisherCountryCode_;
     private version_;
@@ -215,8 +215,8 @@ export declare class TCModel extends Cloneable<TCModel> {
      *
      * @param {boolean} bool - value to set
      */
-    set useNonStandardStacks(bool: boolean);
-    get useNonStandardStacks(): boolean;
+    set useNonStandardTexts(bool: boolean);
+    get useNonStandardTexts(): boolean;
     /**
      * Whether or not this publisher supports OOB signaling.  On Global TC String
      * OOB Vendors Disclosed will be included if the publish wishes to no allow

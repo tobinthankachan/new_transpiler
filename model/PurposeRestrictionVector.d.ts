@@ -11,8 +11,6 @@ export declare class PurposeRestrictionVector extends Cloneable<PurposeRestricti
     /**
      * a map indexed by a string which will be a 'hash' of the purpose and
      * restriction type.
-     *
-     * Using a BST to keep vendors in a sorted order for encoding later
      */
     private map;
     private gvl_;

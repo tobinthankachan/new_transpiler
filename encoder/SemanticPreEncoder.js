@@ -11,8 +11,9 @@ export class SemanticPreEncoder {
             tcModel.publisherRestrictions.gvl = gvl;
             /**
              * Purpose 1 is never allowed to be true for legitimate interest
+             * As of TCF v2.2 purposes 3,4,5 & 6 are not allowed to be true for LI
              */
-            tcModel.purposeLegitimateInterests.unset(1);
+            tcModel.purposeLegitimateInterests.unset([1, 3, 4, 5, 6]);
             /**
              * If a Vendor does not declare a purpose for consent or legitimate
              * interest they should not have a positive signal for it. This code
@@ -37,8 +38,17 @@ export class SemanticPreEncoder {
                                 /**
                                  * Per June 2021 Policy change, Vendors declaring only Special Purposes must
                                  * have their legitimate interest Vendor bit set if they have been disclosed.
-                                 * This empty block ensures their LI bit remains set
+                                 * This block ensures their LI bit remains set
                                  */
+                                vector.set(vendorId);
+                            }
+                            else if (gvlVendorKey === 'legIntPurposes' && vendor['purposes'].length > 0 && vendor['legIntPurposes'].length === 0 && vendor['specialPurposes'].length > 0) {
+                                /**
+                                 * Per June 2021 Policy change, Vendors declaring only Special Purposes must
+                                 * have their legitimate interest Vendor bit set if they have been disclosed.
+                                 * This block ensures their LI bit remains set
+                                 */
+                                vector.set(vendorId);
                             }
                             else {
                                 /**
@@ -113,7 +123,7 @@ export class SemanticPreEncoder {
             throw new EncodingError('Unable to encode TCModel tcModel.gvl.readyPromise is not resolved');
         }
         tcModel = tcModel.clone();
-        tcModel.consentLanguage = gvl.language.toUpperCase();
+        tcModel.consentLanguage = gvl.language.slice(0, 2).toUpperCase();
         if (options?.version > 0 && options?.version <= this.processor.length) {
             tcModel.version = options.version;
         }

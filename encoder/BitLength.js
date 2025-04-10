@@ -15,7 +15,7 @@ export class BitLength {
     static [Fields.purposeLegitimateInterests] = 24;
     static [Fields.purposeOneTreatment] = 1;
     static [Fields.specialFeatureOptins] = 12;
-    static [Fields.useNonStandardStacks] = 1;
+    static [Fields.useNonStandardTexts] = 1;
     static [Fields.vendorListVersion] = 12;
     static [Fields.version] = 6;
     static anyBoolean = 1;

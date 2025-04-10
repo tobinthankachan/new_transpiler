@@ -9,6 +9,14 @@ export class PurposeRestrictionVectorEncoder {
         let bitString = IntEncoder.encode(prVector.numRestrictions, BitLength.numRestrictions);
         // if the vector is empty we'll just return a string with just the numRestricitons being 0
         if (!prVector.isEmpty()) {
+            const nextGvlVendor = (vendorId, lastVendorId) => {
+                for (let nextId = vendorId + 1; nextId <= lastVendorId; nextId++) {
+                    if (prVector.gvl.vendorIds.has(nextId)) {
+                        return nextId;
+                    }
+                }
+                return vendorId;
+            };
             // create each restriction group
             prVector.getRestrictions().forEach((purpRestriction) => {
                 // every restriction group has the purposeId and the restrictionType;
@@ -30,18 +38,10 @@ export class PurposeRestrictionVectorEncoder {
                         numEntries++;
                         startId = vendorId;
                     }
-                    // we know that `len` is greater than zero because we entered the loop
-                    const lastVendorId = vendors[len - 1];
-                    const gvlVendorIds = prVector.gvl.vendorIds;
-                    const nextGvlVendor = (vendorId) => {
-                        while (++vendorId <= lastVendorId && !gvlVendorIds.has(vendorId)) {
-                        }
-                        return vendorId;
-                    };
                     /**
                      * either end of the loop or there are GVL vendor IDs before the next one
                      */
-                    if (i === len - 1 || vendors[i + 1] > nextGvlVendor(vendorId)) {
+                    if (i === len - 1 || vendors[i + 1] > nextGvlVendor(vendorId, vendors[len - 1])) {
                         /**
                          * it's a range entry if we've got something other than the start
                          * ID
